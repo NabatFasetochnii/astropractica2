@@ -1,7 +1,10 @@
 #include "MyForm.h"
 #include <Math.h>
+#include <iostream>
+#include <Eigen/Dense>
 
 using namespace System;
+using namespace Eigen;
 
 //формулы перехода от точкин на поверхности сферы к точке на экране
 double cordX(double fi, double teta);
@@ -11,14 +14,20 @@ double cordY(array<double>^ Array);
 array<double>^ cordXY(double fi, double teta); // в массиве на выход первый элемент х, второй - у
 array<double>^ cordXY(array<double>^ Array);
 //////////////////////////////////////////////////////////////////////
-//координаты сферические по кооридинатам на экране (решения у этой штуки должно быть два) - слова аналитика
-double cordFI(double x, double y);
-double cordFI(array<double>^ Array); //аналогичная логика
+//координаты сферические по кооридинатам декартовым (решения у этой штуки должно быть два) - слова аналитика
+double cordFI(double x, double y); //на вход подаются декартовы координаты точки    
+double cordFI(array<double>^ Array); 
 double cordTETA(double x, double y);
 double cordTETA(array<double>^ Array);
 array<double>^ cordFI_TETA(double x, double y);
 array<double>^ cordFI_TETA(array<double>^ Array);
 //////////////////////////////////////////////////////////////////////
+//координаты точки в декартовых через координаты на экране
+double reneX(double x, double y);
+double reneX(array<double>^ Array);
+double reneY(double x, double y);
+double reneY(array<double>^ Array);
+array<double>^ reneXY(double x, double y);
 
 
 int main() {
@@ -51,6 +60,28 @@ int main() {
     Console::ReadKey();
 
     return 0;
+}
+
+double reneX(double x, double y) {
+
+}
+
+array<double>^ reneXY(double x, double y) {
+
+    Matrix3d C;
+    MatrixXd A(1, 2);
+    C << sqrt(3), 0, -sqrt(3),
+        1, 2, 1,
+        sqrt(2), -sqrt(2), sqrt(2);
+
+    C.inverse();
+    A << x, y, 0;
+
+    A = sqrt(6) * C * A;
+
+    array<double>^ a = { (A[0]), (A[1]) };
+    return a;
+   
 }
 
 double cordX(double fi, double teta) {
