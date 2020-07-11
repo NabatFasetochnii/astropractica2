@@ -23,16 +23,21 @@ array<double>^ cordFI_TETA(double x, double y);
 array<double>^ cordFI_TETA(array<double>^ Array);
 //////////////////////////////////////////////////////////////////////
 //координаты точки в декартовых через координаты на экране
-double reneX(double x, double y);
+double reneX(double x, double y); // на вход подаются координаты на экране, на выход декартовы координаты точки на сфере
 double reneX(array<double>^ Array);
 double reneY(double x, double y);
 double reneY(array<double>^ Array);
 array<double>^ reneXY(double x, double y);
-
+//////////////////////////////////////////////////////////////////////
 
 int main() {
 
-    double fi = 30;
+    double x = 10, y = 40.5;
+
+    Console::WriteLine(reneX(x, y));
+    Console::WriteLine(reneY(x, y));
+
+    /*double fi = 30;
     double teta = 60;
 
     Console::WriteLine("cordX1: ");
@@ -55,21 +60,33 @@ int main() {
 
     Console::WriteLine("cordXY2: ");
     Console::WriteLine(cordXY(Array)[0]);
-    Console::WriteLine(cordXY(Array)[1]);
+    Console::WriteLine(cordXY(Array)[1]);*/
 
     Console::ReadKey();
 
     return 0;
 }
 
-double reneX(double x, double y) {
-
+double reneY(array<double>^ Array) {
+    array<double>^ a = reneXY(Array[0], Array[1]);
+    return a[1];
 }
-
+double reneX(array<double>^ Array) {
+    array<double>^ a = reneXY(Array[0], Array[1]);
+    return a[0];
+}
+double reneY(double x, double y) {
+    array<double>^ a = reneXY(x, y);
+    return a[1];
+}
+double reneX(double x, double y) {
+    array<double>^ a = reneXY(x, y);
+    return a[0];
+}
 array<double>^ reneXY(double x, double y) {
 
     Matrix3d C;
-    MatrixXd A(1, 2);
+    Vector3d A;
     C << sqrt(3), 0, -sqrt(3),
         1, 2, 1,
         sqrt(2), -sqrt(2), sqrt(2);
@@ -83,58 +100,46 @@ array<double>^ reneXY(double x, double y) {
     return a;
    
 }
-
 double cordX(double fi, double teta) {
 
     double a = sqrt(0.5) * (cos(fi) * sin(teta) - cos(teta));
     return a;
 }
-
 double cordX(array<double>^ Array) {
     return cordX(Array[0], Array[1]);
 }
-
 double cordY(double fi, double teta) {
     return sqrt(1.0 / 6.0) * (cos(fi) * sin(teta) + 2 * sin(fi) * sin(teta) + cos(teta));
 }
-
 double cordY(array<double>^ Array) {
     return cordY(Array[0], Array[1]);
 }
-
 array<double>^ cordXY(double fi, double teta) {
     array<double>^ a = { cordX(fi, teta), cordY(fi, teta) };
 
     return a;
 }
-
 array<double>^ cordXY(array<double>^ Array) {
     array<double>^ a = { cordX(Array[0], Array[1]), cordY(Array[0], Array[1]) };
 
     return a;
 }
-
 double cordFI(double x, double y) {
     return y/x;
 }
-
 double cordTETA(double x, double y) {
     return atan(sqrt((pow(x, 2.0) + pow(y, 2)) / (sqrt(1 - pow(x, 2.0) - pow(y, 2)))));
 }
-
 double cordFI(array<double>^ Array) {
     return cordFI(Array[0], Array[1]);
 }
-
 double cordTETA(array<double>^ Array) {
     return cordTETA(Array[0], Array[1]);
 }
-
 array<double>^ cordFI_TETA(double x, double y) {
     array<double>^ a = { cordFI(x, y), cordTETA(x, y) };
     return a;
 }
-
 array<double>^ cordFI_TETA(array<double>^ Array) {
     array<double>^ a = { cordFI(Array[0], Array[1]), cordTETA(Array[0], Array[1]) };
 
