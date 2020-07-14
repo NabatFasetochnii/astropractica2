@@ -29,6 +29,18 @@ double reneY(double x, double y);
 double reneY(array<double>^ Array);
 array<double>^ reneXY(double x, double y);
 //////////////////////////////////////////////////////////////////////
+//Коэффициенты для уравнения плоскости по двум точкам (+ начало координат) в декартовой
+array<double>^ plane(array<double>^ A, array<double>^ B); //На вход подаются два массива,
+//которые характеризуют точки большого круга, то есть содеоржат координаты x, y,z
+//на выход подаётся массив с коэффициентами
+//////////////////////////////////////////////////////////////////////
+//углы поворота большого круга (фи и тета)
+array<double>^ rotation(array<double>^ A); //
+//////////////////////////////////////////////////////////////////////
+Vector3d MX(Vector3d v, double u); //оперрации поворота вокруг соотвествующей оси
+Vector3d MY(Vector3d v, double u); //"здесь поворот совершается против часовой стрелки
+Vector3d MZ(Vector3d v, double u); //а объект по сути поворачивается в другую сторону, по часовой стрелке"
+//на вход идёт вектор и угол, на который нужно повернуть
 
 int main() {
 
@@ -67,6 +79,48 @@ int main() {
     return 0;
 }
 
+Vector3d MX(Vector3d v, double u) {
+        
+    Matrix3d a;
+    a << 1,   0,      0,
+         0,  cos(u), sin(u),
+         0, -sin(u), cos(u);
+    return a * v;
+}
+Vector3d MY(Vector3d v, double u) {
+
+    Matrix3d a;
+    a << cos(u), 0, -sin(u),
+           0,    1,    0,
+         sin(u), 0, cos(u);
+    return a * v;
+}
+Vector3d MZ(Vector3d v, double u) {
+
+    Matrix3d a;
+    a <<  cos(u), sin(u), 0,
+         -sin(u), cos(u), 0,
+            0,      0,    1;
+    return a * v;
+}
+array<double>^ rotation(array<double>^ A) {
+
+    double b = acos(A[0] / sqrt(pow(A[0], 2) + pow(A[1], 2)));
+    double c = acos(A[2]/sqrt(pow(A[0], 2)+ pow(A[1], 2)+ pow(A[2], 2)));
+
+    array<double>^ a = { b, c };
+    array<double>^ d = { -b, c };
+    return (A[1] > 0) ? a : d;
+}
+array<double>^ plane(array<double>^ A, array<double>^ B) {
+
+    array<double>^ a = {
+        A[1]*B[2]-A[2]*B[1], //коэф при х
+        A[2]*B[0]-A[0]*B[2], //коэф при y
+        A[0]*B[1]-A[1]*B[0]  //коэф при z
+    };
+    return a;
+}
 double reneY(array<double>^ Array) {
     array<double>^ a = reneXY(Array[0], Array[1]);
     return a[1];
