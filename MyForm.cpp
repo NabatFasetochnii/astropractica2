@@ -27,7 +27,9 @@ double reneX(double x, double y); // на вход подаются координаты на экране, на в
 double reneX(array<double>^ Array);
 double reneY(double x, double y);
 double reneY(array<double>^ Array);
-array<double>^ reneXY(double x, double y);
+Vector3d reneXYZ(double x, double y);
+double reneZ(double x, double y);
+double reneZ(array<double>^ Array);
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //Коэффициенты для уравнения плоскости по двум точкам (+ начало координат) в декартовой
 array<double>^ plane(array<double>^ A, array<double>^ B); //На вход подаются два массива,
@@ -127,37 +129,43 @@ array<double>^ plane(array<double>^ A, array<double>^ B) {
     return a;
 }
 double reneY(array<double>^ Array) {
-    array<double>^ a = reneXY(Array[0], Array[1]);
+    Vector3d a = reneXYZ(Array[0], Array[1]);
     return a[1];
 }
 double reneX(array<double>^ Array) {
-    array<double>^ a = reneXY(Array[0], Array[1]);
+    Vector3d a = reneXYZ(Array[0], Array[1]);
     return a[0];
 }
 double reneY(double x, double y) {
-    array<double>^ a = reneXY(x, y);
+    Vector3d a = reneXYZ(x, y);
     return a[1];
 }
 double reneX(double x, double y) {
-    array<double>^ a = reneXY(x, y);
+    Vector3d a = reneXYZ(x, y);
     return a[0];
 }
-array<double>^ reneXY(double x, double y) {
+double reneZ(double x, double y) {
+    Vector3d a = reneXYZ(x, y);
+    return a[2];
+}
+double reneZ(array<double>^ Array) {
+    Vector3d a = reneXYZ(Array[0], Array[1]);
+    return a[2];
+}
+Vector3d reneXYZ(double x, double y) {
 
     Matrix3d C;
     Vector3d A;
-    C << sqrt(3), 0, -sqrt(3),
-        1, 2, 1,
+    C << sqrt(3),   0,    -sqrt(3),
+            1,      2,        1,
         sqrt(2), -sqrt(2), sqrt(2);
 
     C.inverse();
-    A << x, y, 0;
+    A << x, y, 0; //TODO доделать, траблы с зет штрих
 
     A = sqrt(6) * C * A;
 
-    array<double>^ a = { (A[0]), (A[1]) };
-    return a;
-   
+    return A;
 }
 double cordX(double fi, double teta) {
 
