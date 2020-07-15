@@ -47,45 +47,58 @@ Vector3d MY(Vector3d v, double u); //"здесь поворот совершается против часовой с
 Vector3d MZ(Vector3d v, double u); //а объект по сути поворачивается в другую сторону, по часовой стрелке"
 //на вход идёт вектор и угол, на который нужно повернуть
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+Vector3d toScreen(Vector3d v);
 
 int main() {
 
-    double x = 10, y = 40.5;
+    Vector3d v, r; //объявляем трёх мерный вектор, который имеет значения координат типа дабл
+    v << 1, 1, 1; //заполняем его единицами
 
-    Console::WriteLine(reneX(x, y));
-    Console::WriteLine(reneY(x, y));
+    //надо повернуть на -0.785398 радиан по Y и на 0.61540309 радиан по X
 
-    /*double fi = 30;
-    double teta = 60;
+    r = MY(v, -0.785398); //поворачиваем по Y точку с координатами (1,1,1)
+    r = MX(r, 0.61540309); //поворачиваем по X
 
-    Console::WriteLine("cordX1: ");
-    Console::WriteLine(cordX(fi, teta));
+    Vector3d f = toScreen(r); //используя функцию получения координат экрана по координатам декарта, инициализируем новый вектор
+    Console::WriteLine(f.data()[0]); //выводим координаты точки
+    Console::WriteLine(f.data()[1]);
+    Console::WriteLine(f.data()[2]);
 
-    array<double>^ Array =  {fi, teta};
+    Console::WriteLine("\n"); // выводим пустую строку для удобства восприятия 
 
-    Console::WriteLine("cordX2: ");
-    Console::WriteLine(cordX(Array));
+    r = MY(v*2, -0.785398); //поворачиваем по Y точку с координатами (2,2,2)
+    r = MX(r, 0.61540309); //поворачиваем по X точку с неизвестными координатами
 
-    Console::WriteLine("cordY1: ");
-    Console::WriteLine(cordY(fi, teta));
+    f = toScreen(r); // ищем координаты на экране
+    Console::WriteLine(f.data()[0]); //выводим координаты точки
+    Console::WriteLine(f.data()[1]);
+    Console::WriteLine(f.data()[2]);
 
-    Console::WriteLine("cordY2: ");
-    Console::WriteLine(cordY(Array));
+    Console::WriteLine("\n");
 
-    Console::WriteLine("cordXY1: ");
-    Console::WriteLine(cordXY(fi, teta)[0]);
-    Console::WriteLine(cordXY(fi, teta)[1]);
+    r = MY(v * 3, -0.785398); //поворачиваем по Y точку с координатами (3,3,3)
+    r = MX(r, 0.61540309); //поворачиваем по X точку с неизвестными координатами
 
-    Console::WriteLine("cordXY2: ");
-    Console::WriteLine(cordXY(Array)[0]);
-    Console::WriteLine(cordXY(Array)[1]);*/
+    f = toScreen(r);// ищем координаты на экране
+    Console::WriteLine(f.data()[0]);//выводим координаты точки
+    Console::WriteLine(f.data()[1]);
+    Console::WriteLine(f.data()[2]);
 
     Console::ReadKey();
 
     return 0;
 }
 
+
+Vector3d toScreen(Vector3d v) {
+
+    Matrix3d C;
+    C << sqrt(3), 0, -sqrt(3),
+        1, 2, 1,
+        sqrt(2), -sqrt(2), sqrt(2);
+
+    return (1 / sqrt(6)) * C * v;
+}
 Vector3d MX(Vector3d v, double u) {
         
     Matrix3d a;
