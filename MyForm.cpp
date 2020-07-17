@@ -141,9 +141,9 @@ private:
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     Graphics^ graphics; // объект для отрисовки
     Vector3d* normal; //нормаль к поверхности
-    array<Vector3d*, 1>^ coords = gcnew array<Vector3d*>(700); // массив координат точек круга 
-    array<Vector3d*, 1>^ axis = gcnew array<Vector3d*>(700); //массив координат точек оси
-    array<Vector3d*, 1>^ dots = gcnew array<Vector3d*>(100); //массив координат пользовательских точек
+    array<Vector3d*, 1>^ coords = gcnew array<Vector3d*>(700); // массив координат точек круга //исправил
+    array<Vector3d*, 1>^ axis = gcnew array<Vector3d*>(700); //массив координат точек оси //исправил
+    array<Vector3d*, 1>^ dots = gcnew array<Vector3d*>(100); //массив координат пользовательских точек // исправил 
     List<PointF>^ points = gcnew List<PointF>(); //коллекция точек большого круга, для отрисовки
     List<PointF>^ pointsAxis = gcnew List<PointF>(); //коллекция точек оси, для отрисовки
     double s = 0.01; //шаг по углу построения точек круга 
@@ -182,6 +182,7 @@ Vector3d BigCircle::getNadir()
 bool BigCircle::addDot(Vector3d v)
 {
     if (isDotOnCircle(v)) {
+        dots[countOfDots] = new Vector3d();
         *dots[countOfDots] = v;
         countOfDots++;
         return true;
@@ -412,12 +413,13 @@ void BigCircle::init()
 {
     for (int i = 0; alpha < 2 * M_PI; i++, alpha += s, tochki++) {
 
+        coords[i] = new Vector3d();
         coords[i]->data()[0] = cos(alpha) * unit;
         coords[i]->data()[1] = sin(alpha) * unit;
         coords[i]->data()[2] = 0;
         points->Add(PointF(coords[i]->data()[0], coords[i]->data()[1]));
         //добавляем точку в коллекцию. полученные координаты сразу переводим в экранные единицы}
-
+        axis[i] = new Vector3d();
         axis[i]->data()[0] = 0;
         axis[i]->data()[1] = 0;
         axis[i]->data()[2] = pow(-1.0, i) * i / 2;
@@ -431,6 +433,7 @@ BigCircle::~BigCircle()
 {
 }
 
+///////////////////////////////////old//////////////////////////////////////////////////////////////
 Vector3d toScreen(Vector3d v) {
 
     Matrix3d C;
