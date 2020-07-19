@@ -18,7 +18,13 @@ namespace astropractica {
 	using namespace Eigen;
 	using namespace System::Drawing::Drawing2D;
 	using namespace System::Windows::Forms;
-	ref class BigCircle //класс большого круга
+
+	/// <summary>
+	/// Сводка для MyForm
+	/// </summary>
+	
+
+	public ref class BigCircle //класс большого круга
 	{
 	public:
 		int getCountOfPoint(); //получить количество точек отрисовки круга 
@@ -50,7 +56,7 @@ namespace astropractica {
 		Vector3d intersectionDots(BigCircle b); //получить точку пересечения двух больших кругов, вторая точка является противоположной этой, то есть просто можно домножить на -1
 
 	private:
-		const int CONT_OF_ARR_POINTS = 1000;
+		const int CONT_OF_ARR_POINTS = 629;
 		Vector3d MX(Vector3d v, double u); //оперрации поворота вокруг соотвествующей оси
 		Vector3d MY(Vector3d v, double u); //"здесь поворот совершается против часовой стрелки
 		Vector3d MZ(Vector3d v, double u); //а объект по сути поворачивается в другую сторону, по часовой стрелке" (с) Аналитик
@@ -63,7 +69,7 @@ namespace astropractica {
 		array<Vector3d*, 1>^ dots = gcnew array<Vector3d*>(CONT_OF_ARR_POINTS); //массив координат пользовательских точек // исправил 
 		List<PointF>^ points = gcnew List<PointF>(); //коллекция точек большого круга, для отрисовки
 		List<PointF>^ pointsAxis = gcnew List<PointF>(); //коллекция точек оси, для отрисовки
-		double s = 0.007; //шаг по углу построения точек круга 
+		double s = 0.01; //шаг по углу построения точек круга 
 		double alpha = 0; // угол поворота, нужен для построения круга
 		int tochki = 0; // колличество точек круга
 		int unit = 200; //массштаб
@@ -79,9 +85,6 @@ namespace astropractica {
 
 	};
 
-	/// <summary>
-	/// Сводка для MyForm
-	/// </summary>
 	public ref class MyForm : public System::Windows::Forms::Form
 	{
 	public:
@@ -169,11 +172,11 @@ namespace astropractica {
 	private: System::Void button1_Click(System::Object^ sender, System::EventArgs^ e) {
 		Graphics^ g = Graphics::FromImage(img);
 		BigCircle^ big = gcnew BigCircle(g, pW, pH);
-
-		big->rotationY(0.1);
+		//g->ScaleTransform(pW/2.0, -pH/2.0);
+		big->rotationY(0.5);
 		big->rotationX(0.5);
 		/*big->rotationZ(3);*/
-
+		//big->drowCircle();
 		big->onDrowAll();
 		/*big->drowAxis();
 		big->drowDots();
@@ -182,5 +185,7 @@ namespace astropractica {
 		this->pic->Image = img;
 	}
 	};
+	
+	
 
 }

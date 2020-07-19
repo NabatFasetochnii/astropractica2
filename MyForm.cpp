@@ -29,7 +29,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int)
 }
 
 
-
 //ref class BigCircle //класс большого круга
 //{
 //public:
@@ -150,18 +149,18 @@ void BigCircle::drowDots()
 {
     if (countOfDots > 0) {
         for (int i = 0; i < countOfDots; i++) {
-                graphics->DrawEllipse(penForDots, dots[i]->data()[0], dots[i]->data()[1], 5, 5);
+                graphics->DrawEllipse(penForDots, dots[i]->data()[0] + pW / 2.0, dots[i]->data()[1] + pH / 2.0, 5, 5);
         }
     }
     
 }
 void BigCircle::drowZenit()
 {
-    graphics->DrawEllipse(penForDots, zenit->data()[0], zenit->data()[1], 5, 5);
+    graphics->DrawEllipse(penForDots, zenit->data()[0] + pW/2.0, zenit->data()[1] + pH/2.0, 5, 5);
 }
 void BigCircle::drowNadir()
 {
-    graphics->DrawEllipse(penForDots, nadir->data()[0], nadir->data()[1], 5, 5);
+    graphics->DrawEllipse(penForDots, nadir->data()[0] + pW / 2.0, nadir->data()[1] + pH / 2.0, 5, 5);
 }
 double BigCircle::dihedralAngle_deg(BigCircle b)
 {
@@ -211,14 +210,14 @@ void BigCircle::rotationX(double u) {
             *dots[i] = MX(*dots[i], u);
         }
         
-        points->Add(PointF(coords[i]->data()[0], coords[i]->data()[1]));
-        pointsAxis->Add(PointF(axis[i]->data()[0], axis[i]->data()[1]));
+        points->Add(PointF(coords[i]->data()[0] + pW / 2.0, coords[i]->data()[1] + pH / 2.0));
+        pointsAxis->Add(PointF(axis[i]->data()[0] + pW / 2.0, axis[i]->data()[1] + pH / 2.0));
         
     }
 
     *normal = MX(*normal, u);
     *zenit = MX(*zenit, u);
-    *nadir = -*zenit;
+    *nadir = MX(*nadir, u);
 }
 void BigCircle::rotationY(double u) {
 
@@ -232,14 +231,14 @@ void BigCircle::rotationY(double u) {
         if (i < 100) {
             *dots[i] = MY(*dots[i], u);
         }
-        points->Add(PointF(coords[i]->data()[0], coords[i]->data()[1]));
-        pointsAxis->Add(PointF(axis[i]->data()[0], axis[i]->data()[1]));
+        points->Add(PointF(coords[i]->data()[0] + pW / 2.0, coords[i]->data()[1] + pH / 2.0));
+        pointsAxis->Add(PointF(axis[i]->data()[0] + pW / 2.0, axis[i]->data()[1] + pH / 2.0));
 
     }
 
     *normal = MY(*normal, u);
     *zenit = MY(*zenit, u);
-    *nadir = -*zenit;
+    *nadir = MY(*nadir, u);
 }
 void BigCircle::rotationZ(double u) {
 
@@ -254,13 +253,13 @@ void BigCircle::rotationZ(double u) {
             *dots[i] = MZ(*dots[i], u);
         }
         
-        points->Add(PointF(coords[i]->data()[0], coords[i]->data()[1]));
-        pointsAxis->Add(PointF(axis[i]->data()[0], axis[i]->data()[1]));
+        points->Add(PointF(coords[i]->data()[0] + pW / 2.0, coords[i]->data()[1] + pH / 2.0));
+        pointsAxis->Add(PointF(axis[i]->data()[0] + pW / 2.0, axis[i]->data()[1] + pH / 2.0));
     }
 
     *normal = MZ(*normal, u);
     *zenit = MZ(*zenit, u);
-    *nadir = -*zenit;
+    *nadir = MZ(*nadir, u);
 }
 BigCircle::BigCircle(Graphics^ graphics, Pen^ pen, Pen^ penForDots, Pen^ penForAxis, int pW, int pH)
 {
@@ -281,8 +280,8 @@ BigCircle::BigCircle(Graphics^ graphics, Pen^ pen, Pen^ penForDots, int pW, int 
     this->pW = pW;
     this->pH = pH;
 
-    penForAxis = gcnew Pen(Color::Gray);
-    penForAxis->Width = 3;
+    penForAxis = gcnew Pen(Color::Black);
+    penForAxis->Width = 2;
     penForAxis->LineJoin = LineJoin::Round;
     
     init();
@@ -296,11 +295,11 @@ BigCircle::BigCircle(Graphics^ graphics, Pen^ pen, int pW, int pH)
     this->pH = pH;
 
     penForDots = gcnew Pen(Color::Red);
-    penForDots->Width = 10;
+    penForDots->Width = 4;
     penForDots->LineJoin = LineJoin::Round;
 
-    penForAxis = gcnew Pen(Color::Gray);
-    penForAxis->Width = 3;
+    penForAxis = gcnew Pen(Color::Black);
+    penForAxis->Width = 2;
     penForAxis->LineJoin = LineJoin::Round;
     init();
 }
@@ -312,15 +311,15 @@ BigCircle::BigCircle(Graphics^ graphics, int pW, int pH)
 
 
     pen = gcnew Pen(Color::Black);
-    pen->Width = 8;
+    pen->Width = 3;
     pen->LineJoin = LineJoin::Round;
 
     penForDots = gcnew Pen(Color::Red);
-    penForDots->Width = 10;
+    penForDots->Width = 4;
     penForDots->LineJoin = LineJoin::Round;
 
-    penForAxis = gcnew Pen(Color::Gray);
-    penForAxis->Width = 3;
+    penForAxis = gcnew Pen(Color::Black);
+    penForAxis->Width = 2;
     penForAxis->LineJoin = LineJoin::Round;
 
     init();
@@ -362,21 +361,34 @@ void BigCircle::init()
         }
 
         coords[i] = new Vector3d();
-        coords[i]->data()[0] = cos(alpha) * unit + pW/2.0;
-        coords[i]->data()[1] = sin(alpha) * unit + pH/2.0;
+        coords[i]->data()[0] = cos(alpha) * unit;
+        coords[i]->data()[1] = -sin(alpha) * unit;
         coords[i]->data()[2] = 0;
-        points->Add(PointF(coords[i]->data()[0], coords[i]->data()[1]));
+        points->Add(PointF(coords[i]->data()[0] + pW / 2.0, coords[i]->data()[1] + pH / 2.0));
         //добавляем точку в коллекцию. полученные координаты сразу переводим в экранные единицы}
+
+
         axis[i] = new Vector3d();
-        axis[i]->data()[0] = pW/2.0;
-        axis[i]->data()[1] = pH/2.0;
-        axis[i]->data()[2] = pow(-1.0, i) * i / 2;
-        pointsAxis->Add(PointF(axis[i]->data()[0], axis[i]->data()[1]));
+        axis[i]->data()[0] = 0;
+        axis[i]->data()[1] = 0;
+        
+        if (i == 0) {
+            axis[i]->data()[2] = 0;
+        }
+        else if (i <= 500) {
+            
+        axis[i]->data()[2] = -unit + unit/(double)i;
+        }
+        else {
+            axis[i]->data()[2] = unit - unit / (double)(i - 500);
+        }
+
+        pointsAxis->Add(PointF(axis[i]->data()[0] + pW / 2.0, axis[i]->data()[1] + pH / 2.0));
     }
     
     (*normal) << 0, 0, 1;
-    (*zenit) << pW/2.0, (pH)/2.0, (double)unit;
-    *nadir = -(*zenit);
+    (*zenit) <<0, 0, (double)unit;
+    *nadir << 0, 0, -(double)unit;
 }
 BigCircle::~BigCircle()
 {
