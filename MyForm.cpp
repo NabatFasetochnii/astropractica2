@@ -156,11 +156,11 @@ void BigCircle::drowDots()
 }
 void BigCircle::drowZenit()
 {
-    graphics->DrawEllipse(penForDots, zenit->data()[0] + pW/2.0, zenit->data()[1] + pH/2.0, 5, 5);
+    graphics->DrawEllipse(penForDots, zenit->data()[0] + pW/2.0, -zenit->data()[1] + pH/2.0, 5, 5);
 }
 void BigCircle::drowNadir()
 {
-    graphics->DrawEllipse(penForDots, nadir->data()[0] + pW / 2.0, nadir->data()[1] + pH / 2.0, 5, 5);
+    graphics->DrawEllipse(penForDots, nadir->data()[0] + pW / 2.0, -nadir->data()[1] + pH / 2.0, 5, 5);
 }
 double BigCircle::dihedralAngle_deg(BigCircle b)
 {
@@ -210,8 +210,8 @@ void BigCircle::rotationX(double u) {
             *dots[i] = MX(*dots[i], u);
         }
         
-        points->Add(PointF(coords[i]->data()[0] + pW / 2.0, coords[i]->data()[1] + pH / 2.0));
-        pointsAxis->Add(PointF(axis[i]->data()[0] + pW / 2.0, axis[i]->data()[1] + pH / 2.0));
+        points->Add(PointF(coords[i]->data()[0] + pW / 2.0, -coords[i]->data()[1] + pH / 2.0));
+        pointsAxis->Add(PointF(axis[i]->data()[0] + pW / 2.0, -axis[i]->data()[1] + pH / 2.0));
         
     }
 
@@ -231,8 +231,8 @@ void BigCircle::rotationY(double u) {
         if (i < 100) {
             *dots[i] = MY(*dots[i], u);
         }
-        points->Add(PointF(coords[i]->data()[0] + pW / 2.0, coords[i]->data()[1] + pH / 2.0));
-        pointsAxis->Add(PointF(axis[i]->data()[0] + pW / 2.0, axis[i]->data()[1] + pH / 2.0));
+        points->Add(PointF(coords[i]->data()[0] + pW / 2.0, -coords[i]->data()[1] + pH / 2.0));
+        pointsAxis->Add(PointF(axis[i]->data()[0] + pW / 2.0, -axis[i]->data()[1] + pH / 2.0));
 
     }
 
@@ -253,8 +253,8 @@ void BigCircle::rotationZ(double u) {
             *dots[i] = MZ(*dots[i], u);
         }
         
-        points->Add(PointF(coords[i]->data()[0] + pW / 2.0, coords[i]->data()[1] + pH / 2.0));
-        pointsAxis->Add(PointF(axis[i]->data()[0] + pW / 2.0, axis[i]->data()[1] + pH / 2.0));
+        points->Add(PointF(coords[i]->data()[0] + pW / 2.0, -coords[i]->data()[1] + pH / 2.0));
+        pointsAxis->Add(PointF(axis[i]->data()[0] + pW / 2.0, -axis[i]->data()[1] + pH / 2.0));
     }
 
     *normal = MZ(*normal, u);
@@ -364,7 +364,7 @@ void BigCircle::init()
         coords[i]->data()[0] = cos(alpha) * unit;
         coords[i]->data()[1] = -sin(alpha) * unit;
         coords[i]->data()[2] = 0;
-        points->Add(PointF(coords[i]->data()[0] + pW / 2.0, coords[i]->data()[1] + pH / 2.0));
+        points->Add(PointF(coords[i]->data()[0] + pW / 2.0, -coords[i]->data()[1] + pH / 2.0));
         //добавляем точку в коллекцию. полученные координаты сразу переводим в экранные единицы}
 
 
@@ -383,7 +383,7 @@ void BigCircle::init()
             axis[i]->data()[2] = unit - unit / (double)(i - 500);
         }
 
-        pointsAxis->Add(PointF(axis[i]->data()[0] + pW / 2.0, axis[i]->data()[1] + pH / 2.0));
+        pointsAxis->Add(PointF(axis[i]->data()[0] + pW / 2.0, -axis[i]->data()[1] + pH / 2.0));
     }
     
     (*normal) << 0, 0, 1;

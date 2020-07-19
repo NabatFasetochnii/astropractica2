@@ -175,7 +175,7 @@ namespace astropractica {
 		//g->ScaleTransform(pW/2.0, -pH/2.0);
 		big->rotationY(0.5);
 		big->rotationX(0.5);
-		/*big->rotationZ(3);*/
+		big->rotationZ(1);
 		//big->drowCircle();
 		big->onDrowAll();
 		/*big->drowAxis();
