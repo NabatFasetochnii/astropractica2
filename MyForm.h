@@ -97,6 +97,7 @@ namespace astropractica {
 		int x, y;
 		BigCircle^ big;
 		String^ buf;
+		bool isPicStart = false;
 
 		MyForm(void)
 		{
@@ -175,12 +176,17 @@ namespace astropractica {
 	}
 	private: System::Void pictureBox1_Click(System::Object^ sender, System::EventArgs^ e) {
 			
+		if (isPicStart) {
 		p = pic->PointToClient(Cursor->Position);
 		big->addDot(p.X, p.Y);
 		big->drowDots();
 		this->pic->Image = img;
+		}
+		
 	}
 	private: System::Void button1_Click(System::Object^ sender, System::EventArgs^ e) {
+
+		isPicStart = true;
 		Graphics^ g = Graphics::FromImage(img);
 		big = gcnew BigCircle(g, pW, pH); //TODO защита от идиота
 		big->rotationY(0.5);
