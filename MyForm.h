@@ -5,6 +5,7 @@
 #include <Eigen/Dense>
 #define _USE_MATH_DEFINES
 #include <Math.h>
+#include <string>
 
 namespace astropractica {
 
@@ -42,8 +43,9 @@ namespace astropractica {
 		Vector3d getNormal(); //получить вектор нормали 
 		Vector3d getZenit();  //получить точку пересечения оси с небесной сферой 1
 		Vector3d getNadir();  //получить точку пересечения оси с небесной сферой 2
-		bool addDot(Vector3d v); //добавить на круг точку 
+		bool addDot(int x, int y); //добавить на круг точку 
 		bool isDotOnCircle(Vector3d v); //проверить находится ли точка на круге
+		bool isDotOnCircle(int x, int y); //проверить находится ли точка на круге
 		int getCountOfDots(); //получить счётчик пользовательских точек 
 		array<Vector3d*, 1>^ getDots(); //получить массив пользовательских точек 
 		void drowCircle(); // нарисовать по отдельности круг
@@ -80,9 +82,9 @@ namespace astropractica {
 		Vector3d* nadir;//точка пересечения оси с небсферой 2
 		int countOfDots = 0; //счётчик пользовательских точек
 		void init(); // построение круга
-		const double EPS = 0.1; //бесконечно малое эпсилон
+		const double EPS = 8; //бесконечно малое эпсилон
 		int pW, pH;
-
+		Vector3d *buf = new Vector3d;
 	};
 
 	public ref class MyForm : public System::Windows::Forms::Form
@@ -91,6 +93,10 @@ namespace astropractica {
 		int pW;
 		int pH;
 		Bitmap^ img;
+		Point p;
+		int x, y;
+		BigCircle^ big;
+		String^ buf;
 
 		MyForm(void)
 		{
@@ -168,11 +174,15 @@ namespace astropractica {
 	private: System::Void MyForm_Load(System::Object^ sender, System::EventArgs^ e) {
 	}
 	private: System::Void pictureBox1_Click(System::Object^ sender, System::EventArgs^ e) {
+			
+		p = pic->PointToClient(Cursor->Position);
+		big->addDot(p.X, p.Y);
+		big->drowDots();
+		this->pic->Image = img;
 	}
 	private: System::Void button1_Click(System::Object^ sender, System::EventArgs^ e) {
 		Graphics^ g = Graphics::FromImage(img);
-		BigCircle^ big = gcnew BigCircle(g, pW, pH);
-		//g->ScaleTransform(pW/2.0, -pH/2.0);
+		big = gcnew BigCircle(g, pW, pH); //TODO защита от идиота
 		big->rotationY(0.5);
 		big->rotationX(0.5);
 		big->rotationZ(1);
@@ -184,6 +194,7 @@ namespace astropractica {
 		big->drowNadir();*/
 		this->pic->Image = img;
 	}
+	
 	};
 	
 	

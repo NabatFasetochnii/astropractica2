@@ -107,14 +107,28 @@ Vector3d BigCircle::getNadir()
 {
     return *nadir;
 }
-bool BigCircle::addDot(Vector3d v)
+bool BigCircle::addDot(int x, int y)
 {
-    if (isDotOnCircle(v)) {
-        //dots[countOfDots] = new Vector3d();
-        *dots[countOfDots] = v;
+
+    if (isDotOnCircle(x - pW / 2, -y + pH / 2)) {
+        dots[countOfDots] = buf;
         countOfDots++;
         return true;
     }
+    return false;
+}
+
+bool BigCircle::isDotOnCircle(int x, int y) {
+
+    for each (Vector3d * c in coords) {
+
+        if ((abs(x - c->data()[0])) < EPS && 
+            (abs(y - c->data()[1])) < EPS) {
+            buf = c;
+            return true;
+        }
+    }
+
     return false;
 }
 bool BigCircle::isDotOnCircle(Vector3d v)
@@ -149,7 +163,7 @@ void BigCircle::drowDots()
 {
     if (countOfDots > 0) {
         for (int i = 0; i < countOfDots; i++) {
-                graphics->DrawEllipse(penForDots, dots[i]->data()[0] + pW / 2.0, dots[i]->data()[1] + pH / 2.0, 5, 5);
+                graphics->DrawEllipse(penForDots, dots[i]->data()[0] + pW / 2.0, -dots[i]->data()[1] + pH / 2.0, 5, 5);
         }
     }
     
