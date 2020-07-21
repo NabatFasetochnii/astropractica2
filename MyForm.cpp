@@ -195,6 +195,7 @@ Vector3d BigCircle::intersectionDots(BigCircle b)
     Vector3d a;
     return a;
 }
+
 double BigCircle::dihedralAngle_rad(BigCircle b)
 {
     return acos(normal->dot(b.getNormal()));
@@ -338,6 +339,103 @@ BigCircle::BigCircle(Graphics^ graphics, int pW, int pH)
 
     init();
 }
+astropractica::BigCircle::BigCircle(Graphics^ graphics, int pW, int pH, int x1, int y1, int x2, int y2)
+{
+    int X1 = x1 - pW / 2;
+    int X2 = x2 - pW / 2;
+    int Y1 = (pH / 2) - y1;
+    int Y2 = (pH / 2) - y2;
+
+    this->graphics = graphics;
+        this->pW = pW;
+        this->pH = pH;
+
+        pen = gcnew Pen(Color::Black);
+        pen->Width = 3;
+        pen->LineJoin = LineJoin::Round;
+
+        penForDots = gcnew Pen(Color::Red);
+        penForDots->Width = 4;
+        penForDots->LineJoin = LineJoin::Round;
+
+        penForAxis = gcnew Pen(Color::Black);
+        penForAxis->Width = 2;
+        penForAxis->LineJoin = LineJoin::Round;
+
+        init();
+
+        //metod1(X1, Y1, X2, Y2);
+
+        if (sqrt(pow(X1, 2) + pow(Y1, 2)) < unit && sqrt(pow(X2, 2) + pow(Y2, 2)) < unit) {
+
+            Vector3d* v1 = new Vector3d();
+            Vector3d* v2 = new Vector3d();
+            Vector3d* v3 = new Vector3d();
+
+            *v1 << X1, Y1, -sqrt(pow(unit, 2.0) - pow(X1, 2.0) - pow(Y1, 2.0));
+            *v2 << X2, Y2, -sqrt(pow(unit, 2.0) - pow(X2, 2.0) - pow(Y2, 2.0));
+
+            *v3 = (v1->cross(*v2)).normalized();//нормаль
+
+          /*  Vector3d* s1 = new Vector3d();
+
+            *s1 = plane(*normal, *v3);*/
+            double a = cordTETA(*v3);
+            rotationY(-a);
+            a = cordFI(*v3);
+            rotationZ(-a);
+            
+        }
+}
+
+void astropractica::BigCircle::metod1(int X1, int Y1, int X2, int Y2)
+{
+if (sqrt(pow(X1, 2) + pow(Y1, 2)) < unit && sqrt(pow(X2, 2) + pow(Y2, 2)) < unit) {
+
+        Vector3d * v1 = new Vector3d();
+        Vector3d * v2 = new Vector3d();
+        Vector3d * v3 = new Vector3d();
+
+        *v1 << X1, Y1, -sqrt(pow(unit, 2.0) - pow(X1, 2.0) - pow(Y1, 2.0));
+        *v2 << X2, Y2, -sqrt(pow(unit, 2.0) - pow(X2, 2.0) - pow(Y2, 2.0));
+
+        *v3 = (v1->cross(*v2)).normalized();//нормаль
+
+        Vector3d* s1 = new Vector3d();
+        Vector3d* s2 = new Vector3d();
+
+        if (v3->data()[0] == 0 && v3->data()[1] == 0) {
+            
+        }
+        else if(v3->data()[1] == 0 && v3->data()[2] == 0)
+        {
+            rotationY(M_PI_2);
+        }
+        else if (v3->data()[0] == 0 && v3->data()[2] == 0) {
+            rotationX(M_PI_2);
+        }
+        else
+        {
+        *s1 << v3->data()[0], 0, v3->data()[2];
+        *s2 << normal->data()[0], 0, normal->data()[2];
+        double y = (s1->dot(*s2));
+        double t = acos(y);
+        //double t = s1->dot(*s2);
+        rotationY(t);
+
+        *s1 << v3->data()[0], v3->data()[1], 0;
+        *s2 << normal->data()[0], normal->data()[1], 0;
+        t = acos(s1->dot(*s2));
+        rotationZ(t);
+
+        *s1 << 0, v3->data()[1], v3->data()[2];
+        *s2 << 0, normal->data()[1], normal->data()[2];
+        t = acos(s1->dot(*s2));
+        rotationX(t);
+        }
+
+    } 
+}
 Vector3d BigCircle::MX(Vector3d v, double u) {
 
     Matrix3d* a = new Matrix3d;
@@ -407,6 +505,32 @@ void BigCircle::init()
 BigCircle::~BigCircle()
 {
 }
+
+double BigCircle::cordFI(Vector3d v) {
+    
+    if (v.data()[1] > 0) {
+        return acos(v.data()[0] / (sqrt(pow(v.data()[0], 2.0) + pow(v.data()[1], 2.0))));
+    }
+    else
+    {
+        return -acos(v.data()[0] / (sqrt(pow(v.data()[0], 2.0) + pow(v.data()[1], 2.0))));
+    }
+
+}
+
+double BigCircle::cordTETA(Vector3d v) {
+    return acos(v.data()[2]);
+}
+Vector3d astropractica::BigCircle::plane(Vector3d A, Vector3d B)
+{
+    Vector3d *a = new Vector3d();
+
+    *a << A.data()[1] * B.data()[2] - A.data()[2] * B.data()[1], //коэф при х
+          A.data()[2] * B.data()[0] - A.data()[0] * B.data()[2], //коэф при y
+          A.data()[0] * B.data()[1] - A.data()[1] * B.data()[0];  //коэф при z
+    return *a;
+}
+
 
 /////////////////////////////////////old//////////////////////////////////////////////////////////////
 //Vector3d toScreen(Vector3d v) {

@@ -33,6 +33,7 @@ namespace astropractica {
 		BigCircle(Graphics^ graphics, Pen^ pen, Pen^ penForDots, int pW, int pH);
 		BigCircle(Graphics^ graphics, Pen^ pen, int pW, int pH);
 		BigCircle(Graphics^ graphics, int pW, int pH);
+		BigCircle(Graphics^ graphics, int pW, int pH, int x1, int y1, int x2, int y2);
 		~BigCircle(); //дискриптор 
 		void rotationX(double u); //ворочаем по ос€м на угол u (в радианах)
 		void rotationY(double u);
@@ -56,7 +57,7 @@ namespace astropractica {
 		double dihedralAngle_rad(BigCircle b); //двугранный угол между двум€ плоскост€ми больших кругов, в радианах
 		double dihedralAngle_deg(BigCircle b);//двугранный угол между двум€ плоскост€ми больших кругов, в градусах
 		Vector3d intersectionDots(BigCircle b); //получить точку пересечени€ двух больших кругов, втора€ точка €вл€етс€ противоположной этой, то есть просто можно домножить на -1
-
+		void metod1(int X1,int Y1, int X2, int Y2);
 	private:
 		const int CONT_OF_ARR_POINTS = 629;
 		Vector3d MX(Vector3d v, double u); //оперрации поворота вокруг соотвествующей оси
@@ -74,7 +75,7 @@ namespace astropractica {
 		double s = 0.01; //шаг по углу построени€ точек круга 
 		double alpha = 0; // угол поворота, нужен дл€ построени€ круга
 		int tochki = 0; // колличество точек круга
-		int unit = 200; //массштаб
+		int unit = 200; //масштаб
 		Pen^ pen; //ручка дл€ круга
 		Pen^ penForDots; //ручка дл€ точек
 		Pen^ penForAxis; //ручка дл€ оси
@@ -83,8 +84,11 @@ namespace astropractica {
 		int countOfDots = 0; //счЄтчик пользовательских точек
 		void init(); // построение круга
 		const double EPS = 8; //бесконечно малое эпсилон
-		int pW, pH;
+		int pW, pH; // размер пикчербокса
 		Vector3d *buf = new Vector3d;
+		double cordFI(Vector3d v); //поворот по oz
+		double cordTETA(Vector3d v); //поворот по oy
+		Vector3d plane(Vector3d v, Vector3d b); // ищем коэфициенты
 	};
 
 	public ref class MyForm : public System::Windows::Forms::Form
@@ -93,11 +97,16 @@ namespace astropractica {
 		int pW;
 		int pH;
 		Bitmap^ img;
+		Graphics^ g;
 		Point p;
 		int x, y;
 		BigCircle^ big;
+		BigCircle^ big2;
 		String^ buf;
 		bool isPicStart = false;
+		bool firstClick = true;
+		int x1;
+		int y1;
 
 		MyForm(void)
 		{
@@ -175,30 +184,49 @@ namespace astropractica {
 	private: System::Void MyForm_Load(System::Object^ sender, System::EventArgs^ e) {
 	}
 	private: System::Void pictureBox1_Click(System::Object^ sender, System::EventArgs^ e) {
-			
+
+		
 		if (isPicStart) {
 		p = pic->PointToClient(Cursor->Position);
 		big->addDot(p.X, p.Y);
 		big->drowDots();
 		this->pic->Image = img;
+		if (firstClick) {
+			
+			x1 = p.X;
+			y1 = p.Y;
+			firstClick = false;
+		}
+		else
+		{
+			big2 = gcnew BigCircle(g, pW, pH, x1, y1, p.X, p.Y);
+			big2->onDrowAll();
+
+			x1 = p.X;
+			y1 = p.Y;
+		}
+
+		
 		}
 		
 	}
 	private: System::Void button1_Click(System::Object^ sender, System::EventArgs^ e) {
 
 		isPicStart = true;
-		Graphics^ g = Graphics::FromImage(img);
+		g = Graphics::FromImage(img);
 		big = gcnew BigCircle(g, pW, pH); //TODO защита от идиота
-		big->rotationY(0.5);
-		big->rotationX(0.5);
-		big->rotationZ(1);
+		//big->rotationY(0.5);
+		//big->rotationX(0.5);
+		//big->rotationZ(1);
 		//big->drowCircle();
 		big->onDrowAll();
 		/*big->drowAxis();
 		big->drowDots();
 		big->drowZenit();
 		big->drowNadir();*/
-		this->pic->Image = img;
+		this->pic->Image = img;	
+
+		
 	}
 	
 	};
