@@ -7,6 +7,7 @@
 #include <Math.h>
 #include <string>
 
+
 namespace astropractica {
 
 	using namespace System::Drawing;
@@ -44,7 +45,7 @@ namespace astropractica {
 		Vector3d getNormal(); //получить вектор нормали 
 		Vector3d getZenit();  //получить точку пересечения оси с небесной сферой 1
 		Vector3d getNadir();  //получить точку пересечения оси с небесной сферой 2
-		bool addDot(int x, int y); //добавить на круг точку 
+		bool addDot(int x, int y); //добавить на круг точку. не работает
 		bool isDotOnCircle(Vector3d v); //проверить находится ли точка на круге
 		bool isDotOnCircle(int x, int y); //проверить находится ли точка на круге
 		int getCountOfDots(); //получить счётчик пользовательских точек 
@@ -54,12 +55,14 @@ namespace astropractica {
 		void drowDots();// точки
 		void drowZenit(); //точку пересечения 1
 		void drowNadir(); //точку пересечения 2
+		void drowArc();//не рабоатет 
 		double dihedralAngle_rad(BigCircle b); //двугранный угол между двумя плоскостями больших кругов, в радианах
 		double dihedralAngle_deg(BigCircle b);//двугранный угол между двумя плоскостями больших кругов, в градусах
 		Vector3d intersectionDots(BigCircle b); //получить точку пересечения двух больших кругов, вторая точка является противоположной этой, то есть просто можно домножить на -1
 		void metod1(int X1,int Y1, int X2, int Y2);
+		void setArc(int X1, int Y1, int X2, int Y2); //не работает
 	private:
-		const int CONT_OF_ARR_POINTS = 629;
+		const int COUNT_OF_ARR_POINTS = 629;
 		Vector3d MX(Vector3d v, double u); //оперрации поворота вокруг соотвествующей оси
 		Vector3d MY(Vector3d v, double u); //"здесь поворот совершается против часовой стрелки
 		Vector3d MZ(Vector3d v, double u); //а объект по сути поворачивается в другую сторону, по часовой стрелке" (с) Аналитик
@@ -67,10 +70,10 @@ namespace astropractica {
 		///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		Graphics^ graphics; // объект для отрисовки
 		Vector3d* normal; //нормаль к поверхности
-		array<Vector3d*, 1>^ coords = gcnew array<Vector3d*>(CONT_OF_ARR_POINTS); // массив координат точек круга //исправил
-		array<Vector3d*, 1>^ axis = gcnew array<Vector3d*>(CONT_OF_ARR_POINTS); //массив координат точек оси //исправил
-		array<Vector3d*, 1>^ dots = gcnew array<Vector3d*>(CONT_OF_ARR_POINTS); //массив координат пользовательских точек // исправил 
-		List<PointF>^ points = gcnew List<PointF>(); //коллекция точек большого круга, для отрисовки
+		array<Vector3d*, 1>^ coords = gcnew array<Vector3d*>(COUNT_OF_ARR_POINTS); // массив координат точек круга //исправил
+		array<Vector3d*, 1>^ axis = gcnew array<Vector3d*>(COUNT_OF_ARR_POINTS); //массив координат точек оси //исправил
+		array<Vector3d*, 1>^ dots = gcnew array<Vector3d*>(COUNT_OF_ARR_POINTS); //массив координат пользовательских точек // исправил 
+		//List<PointF>^ points = gcnew List<PointF>(); //коллекция точек большого круга, для отрисовки
 		List<PointF>^ pointsAxis = gcnew List<PointF>(); //коллекция точек оси, для отрисовки
 		double s = 0.01; //шаг по углу построения точек круга 
 		double alpha = 0; // угол поворота, нужен для построения круга
@@ -84,11 +87,17 @@ namespace astropractica {
 		int countOfDots = 0; //счётчик пользовательских точек
 		void init(); // построение круга
 		const double EPS = 8; //бесконечно малое эпсилон
+		const double EPS2 = 1; //бесконечно малое эпсилон2
 		int pW, pH; // размер пикчербокса
 		Vector3d *buf = new Vector3d;
 		double cordFI(Vector3d v); //поворот по oz
 		double cordTETA(Vector3d v); //поворот по oy
-		Vector3d plane(Vector3d v, Vector3d b); // ищем коэфициенты
+		//Vector3d plane(Vector3d v, Vector3d b); // ищем коэфициенты
+		int arcStatPoint;
+		int arcEndPoint;
+		bool isArcSet = false;
+		Pen^ penForBack;
+
 	};
 
 	public ref class MyForm : public System::Windows::Forms::Form
@@ -107,6 +116,7 @@ namespace astropractica {
 		bool firstClick = true;
 		int x1;
 		int y1;
+		bool b = true;
 
 		MyForm(void)
 		{
@@ -187,26 +197,30 @@ namespace astropractica {
 
 		
 		if (isPicStart) {
-		p = pic->PointToClient(Cursor->Position);
-		big->addDot(p.X, p.Y);
-		big->drowDots();
-		this->pic->Image = img;
-		if (firstClick) {
+			p = pic->PointToClient(Cursor->Position);
+			big->addDot(p.X, p.Y);
+			big->drowDots();
+			//big->rotationX(0.1);
+			if (firstClick) {
 			
-			x1 = p.X;
-			y1 = p.Y;
-			firstClick = false;
-		}
-		else
-		{
-			big2 = gcnew BigCircle(g, pW, pH, x1, y1, p.X, p.Y);
-			big2->onDrowAll();
+				x1 = p.X;
+				y1 = p.Y;
+				firstClick = false;
+			}
+			else
+			{
+				//g->Clear(Color::White);
+				/*big2 = gcnew BigCircle(g, pW, pH, x1, y1, p.X, p.Y);
+				big2->onDrowAll();*/
+				b = false;
+				big->setArc(x1, y1, p.X, p.Y);
+				big->drowArc();
+				
+				x1 = p.X;
+				y1 = p.Y;
+			}
 
-			x1 = p.X;
-			y1 = p.Y;
-		}
-
-		
+		this->pic->Image = img;
 		}
 		
 	}
@@ -214,17 +228,24 @@ namespace astropractica {
 
 		isPicStart = true;
 		g = Graphics::FromImage(img);
-		big = gcnew BigCircle(g, pW, pH); //TODO защита от идиота
-		//big->rotationY(0.5);
+		big = gcnew BigCircle(g, pW, pH); 
+		big->rotationY(1);
 		//big->rotationX(0.5);
 		//big->rotationZ(1);
 		//big->drowCircle();
-		big->onDrowAll();
-		/*big->drowAxis();
-		big->drowDots();
-		big->drowZenit();
-		big->drowNadir();*/
-		this->pic->Image = img;	
+		if (b) {
+			big->onDrowAll();
+			/*big->drowAxis();
+			big->drowDots();
+			big->drowZenit();
+			big->drowNadir();*/
+			this->pic->Image = img;
+		}
+		else
+		{
+			//big->rotationY(0.1);
+			//big->onDrowAll();
+		}
 
 		
 	}

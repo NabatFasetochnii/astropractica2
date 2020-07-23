@@ -152,7 +152,22 @@ array<Vector3d*, 1>^ BigCircle::getDots()
 }
 void BigCircle::drowCircle()
 {
-    graphics->DrawLines(pen, points->ToArray());
+    for (int i = 0; i < COUNT_OF_ARR_POINTS-1; i++) {
+    
+    
+        if (coords[i]->data()[2] > 0) {
+            graphics->DrawLine(penForBack,
+                PointF(coords[i]->data()[0] + pW / 2.0, -coords[i]->data()[1] + pH / 2.0),
+                PointF(coords[i + 1]->data()[0] + pW / 2.0, -coords[i + 1]->data()[1] + pH / 2.0));
+        }
+        else
+        {
+            graphics->DrawLine(pen,
+                PointF(coords[i]->data()[0] + pW / 2.0, -coords[i]->data()[1] + pH / 2.0),
+                PointF(coords[i + 1]->data()[0] + pW / 2.0, -coords[i + 1]->data()[1] + pH / 2.0));
+        }
+    }
+    //graphics->DrawLines(pen, points->ToArray());
 
 }
 void BigCircle::drowAxis()
@@ -176,6 +191,7 @@ void BigCircle::drowNadir()
 {
     graphics->DrawEllipse(penForDots, nadir->data()[0] + pW / 2.0, -nadir->data()[1] + pH / 2.0, 5, 5);
 }
+
 double BigCircle::dihedralAngle_deg(BigCircle b)
 {
     return (acos(normal->dot(b.getNormal())) * 57.2958);
@@ -212,12 +228,35 @@ void BigCircle::onDrowAll() {
 int BigCircle::getCountOfPoint() {
     return tochki;
 }
+
+void astropractica::BigCircle::drowArc()
+{
+    if (isArcSet)
+    {
+        for (int i = arcStatPoint; i < arcEndPoint; i++) {
+
+            graphics->DrawLine(penForDots, 
+                PointF(coords[i]->data()[0] + pW / 2.0, -coords[i]->data()[1] + pH / 2.0), 
+                PointF(coords[i+1]->data()[0] + pW / 2.0, -coords[i+1]->data()[1] + pH / 2.0));
+        }
+
+        isArcSet = false;
+        /*graphics->DrawEllipse(penForDots, 
+            coords[arcStatPoint]->data()[0] + pW / 2.0, -coords[arcStatPoint]->data()[1] + pH / 2.0,
+            5, 5);
+        graphics->DrawEllipse(penForDots, 
+            coords[arcEndPoint]->data()[0] + pW / 2.0, -coords[arcEndPoint]->data()[1] + pH / 2.0,
+            5, 5);*/
+    }
+}
+
+
 void BigCircle::rotationX(double u) {
 
-    points->Clear();
+    //points->Clear();
     pointsAxis->Clear();
     
-    for (int i = 0; i < CONT_OF_ARR_POINTS; i++) {
+    for (int i = 0; i < COUNT_OF_ARR_POINTS; i++) {
 
         *coords[i] = MX(*coords[i], u);
         *axis[i] = MX(*axis[i], u);
@@ -225,7 +264,7 @@ void BigCircle::rotationX(double u) {
             *dots[i] = MX(*dots[i], u);
         }
         
-        points->Add(PointF(coords[i]->data()[0] + pW / 2.0, -coords[i]->data()[1] + pH / 2.0));
+        //points->Add(PointF(coords[i]->data()[0] + pW / 2.0, -coords[i]->data()[1] + pH / 2.0));
         pointsAxis->Add(PointF(axis[i]->data()[0] + pW / 2.0, -axis[i]->data()[1] + pH / 2.0));
         
     }
@@ -236,17 +275,17 @@ void BigCircle::rotationX(double u) {
 }
 void BigCircle::rotationY(double u) {
 
-    points->Clear();
+   // points->Clear();
     pointsAxis->Clear();
 
-    for (int i = 0; i < CONT_OF_ARR_POINTS; i++) {
+    for (int i = 0; i < COUNT_OF_ARR_POINTS; i++) {
 
         *coords[i] = MY(*coords[i], u);
         *axis[i] = MY(*axis[i], u);
         if (i < 100) {
             *dots[i] = MY(*dots[i], u);
         }
-        points->Add(PointF(coords[i]->data()[0] + pW / 2.0, -coords[i]->data()[1] + pH / 2.0));
+       // points->Add(PointF(coords[i]->data()[0] + pW / 2.0, -coords[i]->data()[1] + pH / 2.0));
         pointsAxis->Add(PointF(axis[i]->data()[0] + pW / 2.0, -axis[i]->data()[1] + pH / 2.0));
 
     }
@@ -257,10 +296,10 @@ void BigCircle::rotationY(double u) {
 }
 void BigCircle::rotationZ(double u) {
 
-    points->Clear();
+    //points->Clear();
     pointsAxis->Clear();
 
-    for (int i = 0; i < CONT_OF_ARR_POINTS; i++) {
+    for (int i = 0; i < COUNT_OF_ARR_POINTS; i++) {
 
         *coords[i] = MZ(*coords[i], u);
         *axis[i] = MZ(*axis[i], u);
@@ -268,7 +307,7 @@ void BigCircle::rotationZ(double u) {
             *dots[i] = MZ(*dots[i], u);
         }
         
-        points->Add(PointF(coords[i]->data()[0] + pW / 2.0, -coords[i]->data()[1] + pH / 2.0));
+        //points->Add(PointF(coords[i]->data()[0] + pW / 2.0, -coords[i]->data()[1] + pH / 2.0));
         pointsAxis->Add(PointF(axis[i]->data()[0] + pW / 2.0, -axis[i]->data()[1] + pH / 2.0));
     }
 
@@ -436,6 +475,59 @@ if (sqrt(pow(X1, 2) + pow(Y1, 2)) < unit && sqrt(pow(X2, 2) + pow(Y2, 2)) < unit
 
     } 
 }
+void astropractica::BigCircle::setArc(int X1, int Y1, int X2, int Y2)
+{
+    //Vector3d *v1 = new Vector3d();
+    //Vector3d *v2 = new Vector3d();
+    int x1 = X1 - pW / 2;
+    int x2 = X2 - pW / 2;
+    int y1 = (pH / 2) - Y1;
+    int y2 = (pH / 2) - Y2;
+
+    //*v1 << x1, y1, -sqrt(pow(unit, 2.0) - pow(x1, 2.0) - pow(y1, 2.0));//надо повернуть 
+    //*v2 << x2, y2, -sqrt(pow(unit, 2.0) - pow(x2, 2.0) - pow(y2, 2.0));
+    int a, b;
+    bool q = false;
+    bool w = false;
+
+    for (int i = 0; i < COUNT_OF_ARR_POINTS; i++)
+    {
+
+        
+
+        if (abs((coords[i]->data()[0] - x1)) < EPS && 
+            abs(coords[i]->data()[1] - y1) < EPS)
+        {
+            a = i;
+            q = true;
+            continue;
+        }
+
+        if (abs((coords[i]->data()[0] - x2)) < EPS &&
+            abs((coords[i]->data()[1] - y2)) < EPS)
+        {
+            b = i;
+            w = true;
+            continue;
+        }
+    }
+    
+    if (q && w)
+            {
+            isArcSet = true;
+            if (a<b)
+                {
+                    arcStatPoint = a;
+                    arcEndPoint = b;
+                }
+            else
+                {
+                    arcStatPoint = b;
+                    arcEndPoint = a;
+            }
+           
+    }
+}
 Vector3d BigCircle::MX(Vector3d v, double u) {
 
     Matrix3d* a = new Matrix3d;
@@ -462,11 +554,18 @@ Vector3d BigCircle::MZ(Vector3d v, double u) {
 }
 void BigCircle::init()
 {
+    penForBack = gcnew Pen(Color::Black);
+    
+    penForBack->Width = 1;
+    penForBack->DashStyle = DashStyle::Dash;
+
+    //penForBack->LineJoin = LineJoin::Round;
+
     normal = new Vector3d();
     zenit = new Vector3d();
     nadir = new Vector3d();
 
-    for (int i = 0; i< CONT_OF_ARR_POINTS; i++, alpha += s, tochki++) {
+    for (int i = 0; i< COUNT_OF_ARR_POINTS; i++, alpha += s, tochki++) {
 
         if (i < 100) {
             dots[i] = new Vector3d();
@@ -476,7 +575,7 @@ void BigCircle::init()
         coords[i]->data()[0] = cos(alpha) * unit;
         coords[i]->data()[1] = -sin(alpha) * unit;
         coords[i]->data()[2] = 0;
-        points->Add(PointF(coords[i]->data()[0] + pW / 2.0, -coords[i]->data()[1] + pH / 2.0));
+        //points->Add(PointF(coords[i]->data()[0] + pW / 2.0, -coords[i]->data()[1] + pH / 2.0));
         //добавляем точку в коллекцию. полученные координаты сразу переводим в экранные единицы}
 
 
@@ -521,15 +620,15 @@ double BigCircle::cordFI(Vector3d v) {
 double BigCircle::cordTETA(Vector3d v) {
     return acos(v.data()[2]);
 }
-Vector3d astropractica::BigCircle::plane(Vector3d A, Vector3d B)
-{
-    Vector3d *a = new Vector3d();
-
-    *a << A.data()[1] * B.data()[2] - A.data()[2] * B.data()[1], //коэф при х
-          A.data()[2] * B.data()[0] - A.data()[0] * B.data()[2], //коэф при y
-          A.data()[0] * B.data()[1] - A.data()[1] * B.data()[0];  //коэф при z
-    return *a;
-}
+//Vector3d astropractica::BigCircle::plane(Vector3d A, Vector3d B)
+//{
+//    Vector3d *a = new Vector3d();
+//
+//    *a << A.data()[1] * B.data()[2] - A.data()[2] * B.data()[1], //коэф при х
+//          A.data()[2] * B.data()[0] - A.data()[0] * B.data()[2], //коэф при y
+//          A.data()[0] * B.data()[1] - A.data()[1] * B.data()[0];  //коэф при z
+//    return *a;
+//}
 
 
 /////////////////////////////////////old//////////////////////////////////////////////////////////////
